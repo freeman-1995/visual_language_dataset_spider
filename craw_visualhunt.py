@@ -3,8 +3,7 @@ import sys
 import os
 import time
 import json
-from lxml import etree
-
+from bs4 import BeautifulSoup
 
 proxy = {
     'https':'https://165.22.226.8:8888'}
@@ -99,15 +98,13 @@ total_imgs = 1
 while True:
     url = url_template.replace("key_word", key_words[0]).replace("index", str(index))
     response = requests.get(url, headers=header)
+    page = response.text
+    soup = BeautifulSoup(page,'html.parser')
+    img_contents = soup.find_all(class_="vh-Collage-itemImg mini-check")
 
-    page = etree.HTML(response.content.lower().decode('utf-8'))
-    print(page)
-    imgs = page.xpath("/html/body/div[6]/div/div[2]")
-    print(len(imgs))
-    exit()
-
-    for idx in range(len(content_dict)):
-        img_url = content_dict[idx]["urls"]["regular"]
+    for img in img_contents:
+        alt = img["alt"]
+        img_url = img["data-original"]
         img_res = requests.get(img_url, headers=header)
         if img_res.status_code==200:
             img_path = os.path.join(save_path, "{}.jpg".format(total_imgs))
