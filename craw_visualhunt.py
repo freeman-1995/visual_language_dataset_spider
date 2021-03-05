@@ -82,7 +82,9 @@ key_words = [
     'work'
 ]
 
-url_template = "https://visualhunt.com/photos/key_word/index"
+url_template = "https://visualhunt.com/photos/key_word/index"# through search engine
+url_template = "https://visualhunt.com/search/instant/?q=key_word&page=index"
+
 saved_paths = []
 
 for key_word in key_words:
@@ -92,7 +94,6 @@ for key_word in key_words:
     saved_paths.append(saved_path)
 
 index = 1
-
 save_path = saved_paths[0]
 total_imgs = 1
 while True:
@@ -118,3 +119,6 @@ while True:
     index += 1
     if index == 10:
         exit()
+
+
+

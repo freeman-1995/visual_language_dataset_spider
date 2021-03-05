@@ -57,7 +57,7 @@ def download(imglist,num):
         
 
 if __name__=="__main__":
-    b=webdriver.Chrome(executable_path="/home/xkx/tech-doc/spider/python_crawler/chromedriver")
+    b=webdriver.Chrome(executable_path="./chromedriver")
     name='杨幂'#定义要搜索的内容
     num=500
     imglist=[]

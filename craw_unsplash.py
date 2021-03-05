@@ -60,6 +60,7 @@ key_words = [
 ]
 
 url_template = "https://unsplash.com/napi/topics/key_word/photos?page=index&per_page=10"
+url_template = "https://unsplash.com/napi/search/photos?query=key_word&per_page=20&page=index&xp=feedback-loop-v2%3Acontrol"
 saved_paths = []
 
 for key_word in key_words:
