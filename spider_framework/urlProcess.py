@@ -16,6 +16,7 @@ def redisRun(redisCli, taskName, concurrentCount, queRequest, mulProNums):
         # count代表返回url任务的数量，也就是我们并发的数量
         while True:
             urlTaskList = redisCli.spop(taskNameBuffer, count=concurrentCount)
+            # print(urlTaskList)
             # urlTaskList=0代表缓存集合中的任务没有了，需要重新从原始任务集合当中复制
             if len(urlTaskList) == 0:
                 break

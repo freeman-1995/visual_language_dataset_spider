@@ -3,14 +3,22 @@ sys.path.append("/home/xkx/tech-doc/spider/visual_language_dataset_spider/spider
 import json
 from bs4 import BeautifulSoup
 
+
+web_map = {
+    0:"UnsplashResponseProcessor",
+    1:"VisualHuntResponseProcessor"
+}
+
 def mongoInsert(mongoCli, dbName, cltName, item):
     collection = mongoCli[dbName][cltName]
+
     try:
         # item为空字典时候不添加到mongodb，但是也是请求成功的 可以删除这个url任务
         if item:
             # print("insert {} into mongodb".format(item))
             collection.insert_one(item)
     except:
+        print("insert item failed")
         pass
 
 class responseProcessRegister(object):
@@ -52,10 +60,10 @@ class responseProcessRegister(object):
 
     @classmethod
     def parse(cls, processorName, urlTask, text):
-        return cls.get(processorName).parse()
+        return cls.get(web_map[processorName]).parse(urlTask, text)
 
     @classmethod
-    def run(cls, redisCli, mongoCli, taskName, dbName, cltName, queReposne):
+    def run(cls, redisCli, mongoCli, taskName, saveName, dbName, cltName, queReposne):
         # 从queResponse响应队列中获取响应结果
         taskNameFp = taskName + "_fp"
         while True:
@@ -63,21 +71,27 @@ class responseProcessRegister(object):
             # 结束响应处理的标志None
             if queGet is None:
                 break
-            urlTask, text = queGet
+            urlTask, response = queGet
 
             # 解析网页响应结果text，
-            processorName = urlTask["processorName"]
-            url = urlTask["processorName"]
-            items, newUrlTasks = cls.parse(processorName, url, text)
-            for item in items:
-            # 如果parseResponse是一个生成器的话，需呀遍历获取item
-            # mongoCli, dbName, cltName, item
-                mongoInsert(mongoCli, dbName, cltName, item)
-            # mongoInsert(mongoCli=mongoCli,dbName=dbName,item=item,cltName=cltName)
-            redisCli.smove(taskName, taskNameFp, urlTask)
-            for new_task in newUrlTasks:
-                redisCli.sadd(taskName, new_task)
-
+            if redisCli.hget("img_map", urlTask):
+                text = redisCli.hget("img_map", urlTask)
+                urlTask = urlTask.replace(".", "-")
+                mongoInsert(mongoCli, dbName, cltName, {urlTask:[response, text]})
+            else:
+                processorName = int(redisCli.hget("task_map", urlTask))
+                items, newUrlTasks = cls.parse(processorName, urlTask, response)
+                # mongoInsert(mongoCli=mongoCli,dbName=dbName,item=item,cltName=cltName)
+                redisCli.smove(taskName, taskNameFp, urlTask)
+                for new_task in newUrlTasks:
+                    redisCli.sadd(taskName, new_task)
+                    redisCli.hset("task_map", key=new_task, value=processorName)
+                    # print("add new task: {} processor_id: {}".format(new_task, processorName))
+                
+                for img_url in items:
+                    # print(img_url, items[img_url])
+                    redisCli.hset("img_text_map", key=img_url, value=items[img_url])
+                    redisCli.sadd(saveName, img_url)
 
 
 @responseProcessRegister.register()
@@ -89,7 +103,6 @@ class VisualHuntResponseProcessor():
         item = {}
         soup = BeautifulSoup(response,'html.parser')
         img_contents = soup.find_all(class_="vh-Collage-itemImg mini-check")
-
 
         for img_info in img_contents:
             src = img_info["data-original"]
@@ -117,7 +130,9 @@ class UnsplashResponseProcessor():
         for idx in range(len(content_dict)):
             src = content_dict[idx]["urls"]["regular"]
             text = content_dict[idx]["alt_description"]
-            item[src] = text
+            # print(src, text)
+            if text is not None:
+                item[src] = text
         
         cur_index = int(urlTask.split("&per_page")[-2].split("=")[-1])
         cur_key_word = urlTask.split("/")[5]

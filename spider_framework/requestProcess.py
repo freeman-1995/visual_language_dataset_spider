@@ -1,5 +1,6 @@
+import os
 import asyncio
-
+import aiohttp
 
 async def getResponse(urlTask, queReposne):
     method = "GET"
@@ -7,15 +8,25 @@ async def getResponse(urlTask, queReposne):
     # urlTask如果是一个id，我们需要构造出url
     # 比如说url=f"https://www.xxx.com/distrtct?cid={urlTask}"
     url = urlTask
+
+    # async with aiohttp.ClientSession() as ss:
+    #     response = await ss.request(method, url)
+    #     # print("response.status={}".format(response.status))
+    #     if response.status == 200:
+    #         text = await response.text()
+    #         # 需要有错误处理机制，可以首先根据响应码来判断是否为200
+    #         queReposne.put((urlTask, text))
+
     try:
         async with aiohttp.ClientSession() as ss:
             response = await ss.request(method, url)
+            # print("response.status={}".format(response.status))
             if response.status == 200:
                 text = await response.text()
                 # 需要有错误处理机制，可以首先根据响应码来判断是否为200
                 queReposne.put((urlTask, text))
     except:
-        pass
+        print("anysc request failed")
 
 
 async def spiderMain(*spiderS):
@@ -29,12 +40,68 @@ def spiderEngine(queRequest, getResponse, queReposne):
     while True:
         # 从任务队列当中提取要爬取的url任务
         urlTaskList = queRequest.get()
+        # print("current request {}".format(urlTaskList))
         if urlTaskList is not None:
             # asyncio,aiohttp
             # 先构造一个并发的请求函数，为协程
             # 先定义一个并发运行协程函数的最高层级入口点
             # spiderS=[getResponse() for i in range(100)]
             spiderS = [getResponse(urlTask, queReposne) for urlTask in urlTaskList]
+            asyncio.run(spiderMain(*spiderS))
+        else:
+            break
+
+
+
+async def saveResponse(redisCli, saveName, urlTask, path_to_save="/media/xkx/My Passport/spider"):
+    method = "GET"
+    # 加入urlTask是一个url
+    # urlTask如果是一个id，我们需要构造出url
+    # 比如说url=f"https://www.xxx.com/distrtct?cid={urlTask}"
+    url = urlTask
+
+    async with aiohttp.ClientSession() as ss:
+        response = await ss.request(method, url)
+        # print("response.status={}".format(response.status))
+        if response.status == 200:
+            try:
+                content = await response.text()
+            except:
+                pass
+            print("current request {}".format(url))
+            text = redisCli.hget("img_text_map", url)
+            path_to_save = os.path.join(path_to_save, "{}.jpg".format(text))
+            with open(path_to_save,'wb') as f:
+                f.write(response.content)
+            
+            redisCli.smove(saveName, saveName+"_fp", urlTask)
+
+    # try:
+    #     async with aiohttp.ClientSession() as ss:
+    #         response = await ss.request(method, url)
+    #         # print("response.status={}".format(response.status))
+    #         if response.status == 200:
+    #             text = await response.text()
+    #             savedPath = os.path.join(savedPath, redisCli.hget("img_text_map", url))
+    #             with open(savedPath,'wb') as f:
+    #                 f.write(r.content)
+    #                 f.close()
+    # except:
+    #     print("save image failed")
+
+def saveImage(redisCli, saveName, saveQueRequest, saveResponse):
+    """网络爬虫引擎
+
+    """
+    while True:
+        # 从任务队列当中提取要爬取的url任务
+        urlTaskList = saveQueRequest.get()
+        if urlTaskList is not None:
+            # asyncio,aiohttp
+            # 先构造一个并发的请求函数，为协程
+            # 先定义一个并发运行协程函数的最高层级入口点
+            # spiderS=[getResponse() for i in range(100)]
+            spiderS = [saveResponse(redisCli, saveName, urlTask) for urlTask in urlTaskList]
             asyncio.run(spiderMain(*spiderS))
         else:
             break

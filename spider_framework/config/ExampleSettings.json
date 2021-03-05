@@ -1,12 +1,13 @@
 {
-    "taskName": "visualhunt_test",
+    "taskName": "unsplash",
+    "saveName": "unsplash_save",
     "redisHost": "127.0.0.1",
     "redisPort": 6379,
     "redisDB": 0,
     "mongoHost": "127.0.0.1",
     "mongoPort": 27017,
-    "dbName": "visualhunt_test",
-    "cltName": "visualhunt_test",
+    "dbName": "unsplash",
+    "cltName": "unsplash_data",
     "multiProNums": 1,
     "concurrentCount": 1
 }
