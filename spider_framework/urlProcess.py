@@ -1,7 +1,4 @@
-import redis
-
-
-def redisRunning(redisCli, taskName, concurrentCount, queRequest, mulProNums):
+def redisRun(redisCli, taskName, concurrentCount, queRequest, mulProNums):
     """redis任务制造引擎模块
 
     """
@@ -38,14 +35,3 @@ def redisRunning(redisCli, taskName, concurrentCount, queRequest, mulProNums):
     # 任务结束的标志
     for i in range(mulProNums):
         queRequest.put(None)
-
-
-class urlProcessEngine():
-    def __init__(self):
-        self.redisCli = redisCli
-        self.taskName = taskName
-        self.concurrentCount = concurrentCount
-        self.queRequest = queRequest
-        self.mulProNums = mulProNums
-
-    def run(self):

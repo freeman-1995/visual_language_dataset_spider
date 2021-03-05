@@ -38,5 +38,3 @@ class Registry(object):
         if ret is None:
             raise KeyError("No object named '{}' found in '{}' registry!".format(name, self._name))
         return ret
-
-responseProcessor = Registry('web')

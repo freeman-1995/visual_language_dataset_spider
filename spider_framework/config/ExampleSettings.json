@@ -8,5 +8,5 @@
     "dbName": "visualhunt_test",
     "cltName": "visualhunt_test",
     "multiProNums": 1,
-    "concurrentCount": 1,
+    "concurrentCount": 1
 }
