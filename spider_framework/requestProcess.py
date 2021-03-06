@@ -65,14 +65,14 @@ async def saveResponse(redisCli, saveName, urlTask, path_to_save="/media/xkx/My 
         # print("response.status={}".format(response.status))
         if response.status == 200:
             try:
-                content = await response.text()
+                content = await response.read()
             except:
                 pass
             print("current request {}".format(url))
             text = redisCli.hget("img_text_map", url)
             path_to_save = os.path.join(path_to_save, "{}.jpg".format(text))
             with open(path_to_save,'wb') as f:
-                f.write(response.content)
+                f.write(content)
             
             redisCli.smove(saveName, saveName+"_fp", urlTask)
 
