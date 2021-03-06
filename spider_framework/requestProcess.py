@@ -40,7 +40,7 @@ def spiderEngine(queRequest, getResponse, queReposne):
     while True:
         # 从任务队列当中提取要爬取的url任务
         urlTaskList = queRequest.get()
-        print("current request {}".format(urlTaskList))
+        # print("current request {}".format(urlTaskList))
         if urlTaskList is not None:
             # asyncio,aiohttp
             # 先构造一个并发的请求函数，为协程
@@ -70,6 +70,10 @@ async def saveResponse(redisCli, saveName, urlTask, path_to_save="/media/xkx/My 
                 pass
             print("current request {}".format(url))
             text = redisCli.hget("img_text_map", url)
+            # if "unsplash" in url:
+            #     text = "unsplash" + text
+            # else:
+            #     text = "visualhunt" + text
             path_to_save = os.path.join(path_to_save, "{}.jpg".format(text))
             with open(path_to_save,'wb') as f:
                 f.write(content)
@@ -96,6 +100,7 @@ def saveImage(redisCli, saveName, saveQueRequest, saveResponse):
     while True:
         # 从任务队列当中提取要爬取的url任务
         urlTaskList = saveQueRequest.get()
+        # print("save image url:{}".format(urlTaskList))
         if urlTaskList is not None:
             # asyncio,aiohttp
             # 先构造一个并发的请求函数，为协程

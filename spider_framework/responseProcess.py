@@ -84,19 +84,17 @@ class responseProcessRegister(object):
                 processorName = int(redisCli.hget("task_map", urlTask))
                 items, newUrlTasks = cls.parse(processorName, urlTask, response)
                 # mongoInsert(mongoCli=mongoCli,dbName=dbName,item=item,cltName=cltName)
+                for new_task in newUrlTasks:
+                    redisCli.sadd(taskName, new_task)
+                    redisCli.hset("task_map", key=new_task, value=processorName)
+                    # print("add new task: {} processor_id: {}".format(new_task, processorName))
+                
+                for img_url in items:
+                    # print(img_url, items[img_url])
+                    redisCli.hset("img_text_map", key=img_url, value=items[img_url])
+                    redisCli.sadd(saveName, img_url)
+                
                 redisCli.smove(taskName, taskNameFp, urlTask)
-                if cls._cnt <= 10:
-                    for new_task in newUrlTasks:
-                        redisCli.sadd(taskName, new_task)
-                        redisCli.hset("task_map", key=new_task, value=processorName)
-                        # print("add new task: {} processor_id: {}".format(new_task, processorName))
-                    
-                    for img_url in items:
-                        # print(img_url, items[img_url])
-                        redisCli.hset("img_text_map", key=img_url, value=items[img_url])
-                        redisCli.sadd(saveName, img_url)
-                    
-                    cls._cnt += 1
 
 
 @responseProcessRegister.register()

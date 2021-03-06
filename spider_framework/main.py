@@ -1,11 +1,12 @@
 import sys
+import time
 import multiprocessing
 import json
 import redis
 import pymongo
 from requestProcess import getResponse, spiderEngine, saveImage, saveResponse
 from responseProcess import responseProcessRegister as responseProcessor
-from urlProcess import redisRun
+from urlProcess import redisRun, RedisSave
 from database.initilize import launch_database_server
 
 def main():
@@ -77,8 +78,9 @@ def main():
                                               queRequest, multiProNums))
     pRedisRun.start()
 
-    pRedisSave = multiprocessing.Process(target=redisRun,
-                                        args=(redisCli, saveName, concurrentCount,
+    pRedisSave = multiprocessing.Process(target=RedisSave,
+                                        args=(redisCli,
+                                        taskName, saveName, concurrentCount,
                                               saveQueRequest, multiProNums))
     pRedisSave.start()
 
@@ -105,4 +107,7 @@ def main():
 
 
 if __name__ == "__main__":
+    start = time.perf_counter()
+    print(time.asctime(), "begin...")
     main()
+    print(time.asctime(), "Running time:{}".format(time.perf_counter()-start))
