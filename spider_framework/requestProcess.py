@@ -40,7 +40,7 @@ def spiderEngine(queRequest, getResponse, queReposne):
     while True:
         # 从任务队列当中提取要爬取的url任务
         urlTaskList = queRequest.get()
-        # print("current request {}".format(urlTaskList))
+        print("current request {}".format(urlTaskList))
         if urlTaskList is not None:
             # asyncio,aiohttp
             # 先构造一个并发的请求函数，为协程

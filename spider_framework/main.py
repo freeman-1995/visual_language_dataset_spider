@@ -29,19 +29,30 @@ def main():
     )
 
     # init url task
-    redisCli.delete("visualhunt")
-    redisCli.delete("visualhunt_buffer")
-    redisCli.delete("visualhunt_fp")
+    # redisCli.delete("visualhunt")
+    # redisCli.delete("visualhunt_buffer")
+    # redisCli.delete("visualhunt_fp")
 
     redisCli.delete("unsplash")
     redisCli.delete("unsplash_buffer")
     redisCli.delete("unsplash_fp")
 
+    redisCli.delete("unsplash_save")
+    redisCli.delete("unsplash_save_buffer")
+    redisCli.delete("unsplash_save_fp")
+
+    redisCli.delete("task_map")
+    redisCli.delete("img_text_map")
+    redisCli.delete("img_map")
+
     redisCli.sadd("unsplash", "https://unsplash.com/napi/topics/color-theory/photos?page=1&per_page=10")
     redisCli.hset("task_map", key="https://unsplash.com/napi/topics/color-theory/photos?page=1&per_page=10", value=0)
 
-    # redisCli.sadd("visualhunt", "https://visualhunt.com/photos/cat/1")
-    # redisCli.hset("task_map", key="https://visualhunt.com/photos/cat/1", value=1)
+    redisCli.sadd("unsplash", "https://visualhunt.com/photos/cat/1")
+    redisCli.hset("task_map", key="https://visualhunt.com/photos/cat/1", value=1)
+
+    # redisCli.sadd("unsplash", "https://unsplash.com/")
+    # redisCli.hset("task_map", key="https://unsplash.com/", value=2)
 
 
     # 启动redis任务制造引擎
@@ -66,10 +77,10 @@ def main():
                                               queRequest, multiProNums))
     pRedisRun.start()
 
-    pRedisRun = multiprocessing.Process(target=redisRun,
+    pRedisSave = multiprocessing.Process(target=redisRun,
                                         args=(redisCli, saveName, concurrentCount,
                                               saveQueRequest, multiProNums))
-    pRedisRun.start()
+    pRedisSave.start()
 
     # 启动爬虫引擎
     # queRequest, queReposne

@@ -5,8 +5,9 @@ from bs4 import BeautifulSoup
 
 
 web_map = {
-    0:"UnsplashResponseProcessor",
-    1:"VisualHuntResponseProcessor"
+    0:"SearchBasedUnsplashResponseProcessor",
+    1:"SearchBasedVisualHuntResponseProcessor",
+    2:"RandomBasedUnsplashResponseProcessor",
 }
 
 def mongoInsert(mongoCli, dbName, cltName, item):
@@ -24,6 +25,7 @@ def mongoInsert(mongoCli, dbName, cltName, item):
 class responseProcessRegister(object):
     _name = "responseProcessRegister"
     _obj_map = {}
+    _cnt = 1
 
     @classmethod
     def _do_register(cls, name, obj):
@@ -83,19 +85,22 @@ class responseProcessRegister(object):
                 items, newUrlTasks = cls.parse(processorName, urlTask, response)
                 # mongoInsert(mongoCli=mongoCli,dbName=dbName,item=item,cltName=cltName)
                 redisCli.smove(taskName, taskNameFp, urlTask)
-                for new_task in newUrlTasks:
-                    redisCli.sadd(taskName, new_task)
-                    redisCli.hset("task_map", key=new_task, value=processorName)
-                    # print("add new task: {} processor_id: {}".format(new_task, processorName))
-                
-                for img_url in items:
-                    # print(img_url, items[img_url])
-                    redisCli.hset("img_text_map", key=img_url, value=items[img_url])
-                    redisCli.sadd(saveName, img_url)
+                if cls._cnt <= 10:
+                    for new_task in newUrlTasks:
+                        redisCli.sadd(taskName, new_task)
+                        redisCli.hset("task_map", key=new_task, value=processorName)
+                        # print("add new task: {} processor_id: {}".format(new_task, processorName))
+                    
+                    for img_url in items:
+                        # print(img_url, items[img_url])
+                        redisCli.hset("img_text_map", key=img_url, value=items[img_url])
+                        redisCli.sadd(saveName, img_url)
+                    
+                    cls._cnt += 1
 
 
 @responseProcessRegister.register()
-class VisualHuntResponseProcessor():
+class SearchBasedVisualHuntResponseProcessor():
     url_template = "https://visualhunt.com/photos/key_word/index"
 
     @classmethod
@@ -120,7 +125,7 @@ class VisualHuntResponseProcessor():
         return item, newUrlTasks
 
 @responseProcessRegister.register()
-class UnsplashResponseProcessor():
+class SearchBasedUnsplashResponseProcessor():
     url_template = "https://unsplash.com/napi/topics/key_word/photos?page=index&per_page=10"
 
     @classmethod
@@ -141,6 +146,39 @@ class UnsplashResponseProcessor():
         newUrlTask = cls.url_template.replace("key_word", cur_key_word).replace("index", str(cur_index+1))
 
         newUrlTasks.append(newUrlTask)
+
+        return item, newUrlTasks
+
+@responseProcessRegister.register()
+class RandomBasedUnsplashResponseProcessor():
+    """
+    start page: https://unsplash.com/
+    """
+    _start_page = "https://unsplash.com"
+    @classmethod
+    def parse(cls, urlTask, response):
+        item = {}
+        soup = BeautifulSoup(response,'html.parser')
+        column_contents = soup.find_all(class_="_1ZjfQ")
+
+        for column in column_contents:
+            for img_info in column.find_all(itemprop="image"):
+                # print(img_info)
+                # 图片相关页面
+                img_content = img_info.find(itemprop="contentUrl")
+                img_related = cls._start_page + img_content["href"]
+                img_src = img_content.find(class_="_2UpQX")
+                if img_src is not None:
+                    # 图片本身
+                    src = img_src["src"]
+                    # 图片alt
+                    text = img_src["alt"]
+                    print("img_related:{} img_src:{} text:{}".format(img_related, src, text))
+
+        # newUrlTasks = []
+        # newUrlTask = cls.url_template.replace("key_word", cur_key_word).replace("index", str(cur_index+1))
+
+        # newUrlTasks.append(newUrlTask)
 
         return item, newUrlTasks
 
