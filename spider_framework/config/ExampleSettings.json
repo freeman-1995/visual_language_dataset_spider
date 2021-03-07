@@ -8,7 +8,7 @@
     "mongoPort": 27017,
     "dbName": "unsplash",
     "cltName": "unsplash_data",
-    "multiProNums": 4,
+    "multiProNums": 1,
     "concurrentCount": 4,
     "mode":"aiohttp"
 }

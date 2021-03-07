@@ -10,6 +10,8 @@ class GetResponse():
     def __init__(self):
         dcap = dict(DesiredCapabilities.PHANTOMJS)  #设置useragent
         dcap['phantomjs.page.settings.userAgent'] = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.108 Safari/537.36')  #根据需要设置具体的浏览器信息
+        self.header = { 'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.108 Safari/537.36'}
+        self.proxy = proxy = 'http://42.180.60.10:8080'
         self._webdriver = webdriver.PhantomJS(desired_capabilities=dcap) 
         self._webdriver.set_page_load_timeout(30)
 
@@ -20,24 +22,24 @@ class GetResponse():
         # 比如说url=f"https://www.xxx.com/distrtct?cid={urlTask}"
         url = urlTask
 
-        # async with aiohttp.ClientSession() as ss:
-        #     response = await ss.request(method, url)
-        #     # print("response.status={}".format(response.status))
-        #     if response.status == 200:
-        #         text = await response.text()
-        #         # 需要有错误处理机制，可以首先根据响应码来判断是否为200
-        #         queReposne.put((urlTask, text))
+        async with aiohttp.ClientSession() as ss:
+            response = await ss.request(method, url, headers=self.header)
+            print("response.status={}".format(response.status))
+            if response.status == 200:
+                text = await response.text()
+                # 需要有错误处理机制，可以首先根据响应码来判断是否为200
+                queReposne.put((urlTask, text))
 
-        try:
-            async with aiohttp.ClientSession() as ss:
-                response = await ss.request(method, url)
-                # print("response.status={}".format(response.status))
-                if response.status == 200:
-                    text = await response.text()
-                    # 需要有错误处理机制，可以首先根据响应码来判断是否为200
-                    queReposne.put((urlTask, text))
-        except:
-            print("anysc request failed")
+        # try:
+        #     async with aiohttp.ClientSession() as ss:
+        #         response = await ss.request(method, url, headers=self.header, proxy=self.proxy)
+        #         print("response.status={}".format(response.status))
+        #         if response.status == 200:
+        #             text = await response.text()
+        #             # 需要有错误处理机制，可以首先根据响应码来判断是否为200
+        #             queReposne.put((urlTask, text))
+        # except:
+        #     print("anysc request failed")
     
     async def phanTomjs(self, urlTask, queReposne):
         # await asyncio.sleep(1)
@@ -83,7 +85,7 @@ def spiderEngine(queRequest, getResponse, queReposne, mode):
             break
 
 
-async def saveResponse(redisCli, saveName, urlTask, path_to_save="/media/xkx/My Passport/spider"):
+async def saveResponse(redisCli, saveName, urlTask, path_to_save="/media/xkx/Ubuntu 16.0/meinv"):
     method = "GET"
     # 加入urlTask是一个url
     # urlTask如果是一个id，我们需要构造出url

@@ -53,8 +53,8 @@ def main():
     # redisCli.sadd("unsplash", "https://visualhunt.com/photos/cat/1")
     # redisCli.hset("task_map", key="https://visualhunt.com/photos/cat/1", value=1)
 
-    redisCli.sadd("unsplash", "https://unsplash.com/napi/photos/qQ676cbJmns/related")
-    redisCli.hset("task_map", key="https://unsplash.com/napi/photos/qQ676cbJmns/related", value=2)
+    redisCli.sadd("unsplash", "https://www.mzitu.com/page/1")
+    redisCli.hset("task_map", key="https://www.mzitu.com/page/1", value=4)
 
 
     # 启动redis任务制造引擎

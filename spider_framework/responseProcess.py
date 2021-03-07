@@ -9,6 +9,7 @@ web_map = {
     0:"SearchBasedUnsplashResponseProcessor",
     1:"SearchBasedVisualHuntResponseProcessor",
     2:"RandomBasedUnsplashResponseProcessor",
+    4:"RandomMzituResponseProcessor"
 }
 
 def mongoInsert(mongoCli, dbName, cltName, item):
@@ -107,6 +108,17 @@ class responseProcessRegister(object):
                         redisCli.hset("img_text_map", key=img_src, value=items[img_src])
                         redisCli.sadd(saveName, img_src)
                     redisCli.smove(taskName, taskNameFp, urlTask)
+                
+                elif processorName in [4]:
+                    items, newUrlTasks = cls.parse(processorName, urlTask, response)
+                    for new_task in newUrlTasks:
+                        redisCli.sadd(taskName, new_task)
+                        redisCli.hset("task_map", key=new_task, value=processorName)
+                        # print("add new task: {} processor_id: {}".format(new_task, processorName))
+                    for img_src in items:
+                        redisCli.hset("img_text_map", key=img_src, value=items[img_src])
+                        redisCli.sadd(saveName, img_src)
+                    redisCli.smove(taskName, taskNameFp, urlTask)
                 else:
                     print("no corresponding processor")
 
@@ -183,6 +195,28 @@ class RandomBasedUnsplashResponseProcessor():
 
         return items, newUrlTasks
 
+@responseProcessRegister.register()
+class RandomMzituResponseProcessor():
+    url_template = "https://www.mzitu.com/page/index"
+    max_page = 261
+    @classmethod
+    def parse(cls, urlTask, response):
+        item = {}
+        soup = BeautifulSoup(response,'html.parser')
+        img_contents = soup.find_all(class_="lazy")
+
+        for img_info in img_contents:
+            src = img_info["data-original"]
+            text= img_info["alt"]
+            item[src] = text
+        cur_index = int(urlTask.split("/")[-1])
+        
+        if cur_index <= cls.max_page:
+            newUrlTasks = []
+            newUrlTask = cls.url_template.replace("index", str(cur_index+1))
+            newUrlTasks.append(newUrlTask)
+
+        return item, newUrlTasks
 
 if __name__ == "__main__":
     print(responseProcessRegister.get("VisualHuntResponseProcessor"))
