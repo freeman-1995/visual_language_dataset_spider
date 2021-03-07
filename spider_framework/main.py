@@ -4,7 +4,7 @@ import multiprocessing
 import json
 import redis
 import pymongo
-from requestProcess import getResponse, spiderEngine, saveImage, saveResponse
+from requestProcess import GetResponse, spiderEngine, saveImage, saveResponse
 from responseProcess import responseProcessRegister as responseProcessor
 from urlProcess import redisRun, RedisSave
 from database.initilize import launch_database_server
@@ -46,14 +46,14 @@ def main():
     redisCli.delete("img_text_map")
     redisCli.delete("img_map")
 
-    redisCli.sadd("unsplash", "https://unsplash.com/napi/topics/color-theory/photos?page=1&per_page=10")
-    redisCli.hset("task_map", key="https://unsplash.com/napi/topics/color-theory/photos?page=1&per_page=10", value=0)
+    # redisCli.sadd("unsplash", "https://unsplash.com/napi/topics/color-theory/photos?page=1&per_page=10")
+    # redisCli.hset("task_map", key="https://unsplash.com/napi/topics/color-theory/photos?page=1&per_page=10", value=0)
 
-    redisCli.sadd("unsplash", "https://visualhunt.com/photos/cat/1")
-    redisCli.hset("task_map", key="https://visualhunt.com/photos/cat/1", value=1)
+    # redisCli.sadd("unsplash", "https://visualhunt.com/photos/cat/1")
+    # redisCli.hset("task_map", key="https://visualhunt.com/photos/cat/1", value=1)
 
-    # redisCli.sadd("unsplash", "https://unsplash.com/")
-    # redisCli.hset("task_map", key="https://unsplash.com/", value=2)
+    redisCli.sadd("unsplash", "https://unsplash.com/photos/qQ676cbJmns")
+    redisCli.hset("task_map", key="https://unsplash.com/photos/qQ676cbJmns", value=2)
 
 
     # 启动redis任务制造引擎
@@ -88,7 +88,7 @@ def main():
     # queRequest, queReposne
     queReposne = multiprocessing.Queue()
     pList = [multiprocessing.Process(
-        target=spiderEngine, args=(queRequest, getResponse, queReposne), name=f'{i}') for i in range(multiProNums)]
+        target=spiderEngine, args=(queRequest, GetResponse(), queReposne, settings["mode"]), name=f'{i}') for i in range(multiProNums)]
     [p.start() for p in pList]
 
     # 图片保存

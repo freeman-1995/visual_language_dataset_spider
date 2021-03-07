@@ -9,5 +9,6 @@
     "dbName": "unsplash",
     "cltName": "unsplash_data",
     "multiProNums": 1,
-    "concurrentCount": 4
+    "concurrentCount": 1,
+    "mode":"phantomjs"
 }

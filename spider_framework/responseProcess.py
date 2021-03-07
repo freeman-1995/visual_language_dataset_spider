@@ -2,6 +2,7 @@ import sys
 sys.path.append("/home/xkx/tech-doc/spider/visual_language_dataset_spider/spider_framework/")
 import json
 from bs4 import BeautifulSoup
+from collections import defaultdict
 
 
 web_map = {
@@ -82,19 +83,31 @@ class responseProcessRegister(object):
                 mongoInsert(mongoCli, dbName, cltName, {urlTask:[response, text]})
             else:
                 processorName = int(redisCli.hget("task_map", urlTask))
-                items, newUrlTasks = cls.parse(processorName, urlTask, response)
-                # mongoInsert(mongoCli=mongoCli,dbName=dbName,item=item,cltName=cltName)
-                for new_task in newUrlTasks:
-                    redisCli.sadd(taskName, new_task)
-                    redisCli.hset("task_map", key=new_task, value=processorName)
-                    # print("add new task: {} processor_id: {}".format(new_task, processorName))
-                
-                for img_url in items:
-                    # print(img_url, items[img_url])
-                    redisCli.hset("img_text_map", key=img_url, value=items[img_url])
-                    redisCli.sadd(saveName, img_url)
-                
-                redisCli.smove(taskName, taskNameFp, urlTask)
+                if processorName in [0, 1]:
+                    items, newUrlTasks = cls.parse(processorName, urlTask, response)
+                    # mongoInsert(mongoCli=mongoCli,dbName=dbName,item=item,cltName=cltName)
+                    for new_task in newUrlTasks:
+                        redisCli.sadd(taskName, new_task)
+                        redisCli.hset("task_map", key=new_task, value=processorName)
+                        # print("add new task: {} processor_id: {}".format(new_task, processorName))
+                    
+                    for img_src in items:
+                        # print(img_url, items[img_url])
+                        redisCli.hset("img_text_map", key=img_src, value=items[img_src])
+                        redisCli.sadd(saveName, img_src)
+                    
+                    redisCli.smove(taskName, taskNameFp, urlTask)
+                elif processorName in [2, 3]:
+                    items = cls.parse(processorName, urlTask, response)
+                    for new_task in items["related"]:
+                        redisCli.sadd(taskName, new_task)
+                        redisCli.hset("task_map", key=new_task, value=processorName)
+                    for img_src in items["src"]:
+                        redisCli.hset("img_text_map", key=img_src[0], value=img_src[1])
+                        redisCli.sadd(saveName, img_src[0])
+                    redisCli.smove(taskName, taskNameFp, urlTask)
+                else:
+                    print("no corresponding processor")
 
 
 @responseProcessRegister.register()
@@ -155,9 +168,14 @@ class RandomBasedUnsplashResponseProcessor():
     _start_page = "https://unsplash.com"
     @classmethod
     def parse(cls, urlTask, response):
-        item = {}
+        items = defaultdict(list)
         soup = BeautifulSoup(response,'html.parser')
         column_contents = soup.find_all(class_="_1ZjfQ")
+
+        # if urlTask == "https://unsplash.com/photos/gjHSFhYKwmk":
+        #     print(response)
+        #     with open("debug.txt", "w") as f:
+        #         f.write(str(soup))
 
         for column in column_contents:
             for img_info in column.find_all(itemprop="image"):
@@ -171,14 +189,11 @@ class RandomBasedUnsplashResponseProcessor():
                     src = img_src["src"]
                     # 图片alt
                     text = img_src["alt"]
-                    print("img_related:{} img_src:{} text:{}".format(img_related, src, text))
-
-        # newUrlTasks = []
-        # newUrlTask = cls.url_template.replace("key_word", cur_key_word).replace("index", str(cur_index+1))
-
-        # newUrlTasks.append(newUrlTask)
-
-        return item, newUrlTasks
+                    # print("img_related:{} img_src:{} text:{}".format(img_related, src, text))
+                    if text is not None:
+                        items["src"].append((src, text))
+                    items["related"].append(img_related)
+        return items
 
 
 if __name__ == "__main__":
