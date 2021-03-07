@@ -33,12 +33,13 @@ class GetResponse():
         except:
             print("anysc request failed")
     
-    async def phanTomjs(self, urlTask):
+    async def phanTomjs(self, urlTask, queRequest):
         await asyncio.sleep(1)
         print("request url:{}".format(urlTask))
         self._webdriver.get(urlTask)
         
         page_source = self._webdriver.page_source
+        queRequest.put((urlTask, page_source))
         
         # try:
         #     self._webdriver.get(urlTask)
@@ -52,21 +53,21 @@ async def spiderMain(*spiderS):
     await asyncio.gather(*spiderS)
 
 
-def spiderEngine(getResponse, urlTaskList):
+def spiderEngine(getResponse, urlTaskList, queRequest):
     """网络爬虫引擎
 
     """
     while True:
         if urlTaskList is not None:
-            spiderS = [getResponse.phanTomjs(urlTask) for urlTask in urlTaskList]
+            spiderS = [getResponse.phanTomjs(urlTask, queRequest) for urlTask in urlTaskList]
             asyncio.run(spiderMain(*spiderS))
         else:
             break
 
 
 urlTaskList = ["https://unsplash.com/photos/m4_W2390DSI"]
-
+queRequest = multiprocessing.Queue(maxsize=2000)
 pList = [multiprocessing.Process(
-        target=spiderEngine, args=(GetResponse(), urlTaskList), name=f'{i}') for i in range(2)]
+        target=spiderEngine, args=(GetResponse(), urlTaskList, queRequest), name=f'{i}') for i in range(1)]
 
 [p.start() for p in pList]

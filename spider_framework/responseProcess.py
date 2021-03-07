@@ -95,23 +95,24 @@ class responseProcessRegister(object):
                         # print(img_url, items[img_url])
                         redisCli.hset("img_text_map", key=img_src, value=items[img_src])
                         redisCli.sadd(saveName, img_src)
-                    
                     redisCli.smove(taskName, taskNameFp, urlTask)
+
                 elif processorName in [2, 3]:
-                    items = cls.parse(processorName, urlTask, response)
-                    for new_task in items["related"]:
+                    items, newUrlTasks = cls.parse(processorName, urlTask, response)
+                    for new_task in newUrlTasks:
                         redisCli.sadd(taskName, new_task)
                         redisCli.hset("task_map", key=new_task, value=processorName)
-                    for img_src in items["src"]:
-                        redisCli.hset("img_text_map", key=img_src[0], value=img_src[1])
-                        redisCli.sadd(saveName, img_src[0])
+                        # print("add new task: {} processor_id: {}".format(new_task, processorName))
+                    for img_src in items:
+                        redisCli.hset("img_text_map", key=img_src, value=items[img_src])
+                        redisCli.sadd(saveName, img_src)
                     redisCli.smove(taskName, taskNameFp, urlTask)
                 else:
                     print("no corresponding processor")
 
 
 @responseProcessRegister.register()
-class SearchBasedVisualHuntResponseProcessor():
+class VisualHuntResponseProcessor():
     url_template = "https://visualhunt.com/photos/key_word/index"
 
     @classmethod
@@ -136,7 +137,7 @@ class SearchBasedVisualHuntResponseProcessor():
         return item, newUrlTasks
 
 @responseProcessRegister.register()
-class SearchBasedUnsplashResponseProcessor():
+class UnsplashResponseProcessor():
     url_template = "https://unsplash.com/napi/topics/key_word/photos?page=index&per_page=10"
 
     @classmethod
@@ -162,38 +163,25 @@ class SearchBasedUnsplashResponseProcessor():
 
 @responseProcessRegister.register()
 class RandomBasedUnsplashResponseProcessor():
-    """
-    start page: https://unsplash.com/
-    """
-    _start_page = "https://unsplash.com"
+    url_template = "https://unsplash.com/napi/photos/"
     @classmethod
     def parse(cls, urlTask, response):
-        items = defaultdict(list)
-        soup = BeautifulSoup(response,'html.parser')
-        column_contents = soup.find_all(class_="_1ZjfQ")
+        items = {}
+        ids = []
+        
+        content_dict = json.loads(response)
+        print(type(content_dict), content_dict["results"][0].keys())
+        for info in content_dict["results"]:
+            src = info["urls"]["regular"]
+            text = info["alt_description"]
+            # print(src, text)
+            if text is not None:
+                items[src] = text
+            ids.append(info["id"])
 
-        # if urlTask == "https://unsplash.com/photos/gjHSFhYKwmk":
-        #     print(response)
-        #     with open("debug.txt", "w") as f:
-        #         f.write(str(soup))
+        newUrlTasks = [cls.url_template + key + "/related" for key in ids]
 
-        for column in column_contents:
-            for img_info in column.find_all(itemprop="image"):
-                # print(img_info)
-                # 图片相关页面
-                img_content = img_info.find(itemprop="contentUrl")
-                img_related = cls._start_page + img_content["href"]
-                img_src = img_content.find(class_="_2UpQX")
-                if img_src is not None:
-                    # 图片本身
-                    src = img_src["src"]
-                    # 图片alt
-                    text = img_src["alt"]
-                    # print("img_related:{} img_src:{} text:{}".format(img_related, src, text))
-                    if text is not None:
-                        items["src"].append((src, text))
-                    items["related"].append(img_related)
-        return items
+        return items, newUrlTasks
 
 
 if __name__ == "__main__":

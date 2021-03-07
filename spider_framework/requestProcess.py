@@ -3,10 +3,15 @@ import asyncio
 import aiohttp
 from selenium import webdriver
 import copy
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
 
 class GetResponse():
     def __init__(self):
-        self._webdriver = webdriver.PhantomJS()
+        dcap = dict(DesiredCapabilities.PHANTOMJS)  #设置useragent
+        dcap['phantomjs.page.settings.userAgent'] = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.108 Safari/537.36')  #根据需要设置具体的浏览器信息
+        self._webdriver = webdriver.PhantomJS(desired_capabilities=dcap) 
+        self._webdriver.set_page_load_timeout(30)
 
     async def aioHttpResponse(self, urlTask, queReposne):
         method = "GET"
@@ -39,8 +44,7 @@ class GetResponse():
         print("request url:{}".format(urlTask))
         self._webdriver.get(urlTask)
         page_source = self._webdriver.page_source
-        a = copy.deepcopy(str(page_source))
-        queReposne.put((urlTask, a))
+        queReposne.put((urlTask, page_source))
         
         # try:
         #     print("request url:{}".format(urlTask))
@@ -62,7 +66,7 @@ def spiderEngine(queRequest, getResponse, queReposne, mode):
     while True:
         # 从任务队列当中提取要爬取的url任务
         urlTaskList = queRequest.get()
-        # print("current request {}".format(urlTaskList))
+        print("current request {}".format(urlTaskList))
         if urlTaskList is not None:
             # asyncio,aiohttp
             # 先构造一个并发的请求函数，为协程

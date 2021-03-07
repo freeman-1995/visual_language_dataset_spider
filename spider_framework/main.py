@@ -9,6 +9,7 @@ from responseProcess import responseProcessRegister as responseProcessor
 from urlProcess import redisRun, RedisSave
 from database.initilize import launch_database_server
 
+
 def main():
     # launch_database_server()
 
@@ -52,8 +53,8 @@ def main():
     # redisCli.sadd("unsplash", "https://visualhunt.com/photos/cat/1")
     # redisCli.hset("task_map", key="https://visualhunt.com/photos/cat/1", value=1)
 
-    redisCli.sadd("unsplash", "https://unsplash.com/photos/qQ676cbJmns")
-    redisCli.hset("task_map", key="https://unsplash.com/photos/qQ676cbJmns", value=2)
+    redisCli.sadd("unsplash", "https://unsplash.com/napi/photos/qQ676cbJmns/related")
+    redisCli.hset("task_map", key="https://unsplash.com/napi/photos/qQ676cbJmns/related", value=2)
 
 
     # 启动redis任务制造引擎
