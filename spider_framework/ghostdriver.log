@@ -1,75 +1,12 @@
-[INFO  - 2021-03-07T07:42:07.670Z] GhostDriver - Main - running on port 44621
-[INFO  - 2021-03-07T07:42:08.586Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1","webSecurityEnabled":true}
-[INFO  - 2021-03-07T07:42:08.586Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.customHeaders:  - {}
-[INFO  - 2021-03-07T07:42:08.586Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"2.1.1","driverName":"ghostdriver","driverVersion":"1.2.0","platform":"linux-unknown-64bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"proxyType":"direct"}}
-[INFO  - 2021-03-07T07:42:08.586Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: 9ed78840-7f18-11eb-9b58-29bd0d3f9c3c
-[ERROR - 2021-03-07T07:42:17.949Z] Session [9e3a84f0-7f18-11eb-a989-d1f0a3958578] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
+[INFO  - 2021-03-07T08:42:29.332Z] GhostDriver - Main - running on port 59021
+[INFO  - 2021-03-07T08:42:30.189Z] Session [0d7c4b70-7f21-11eb-a25d-8587fdfc5f81] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1","webSecurityEnabled":true}
+[INFO  - 2021-03-07T08:42:30.189Z] Session [0d7c4b70-7f21-11eb-a25d-8587fdfc5f81] - page.customHeaders:  - {}
+[INFO  - 2021-03-07T08:42:30.189Z] Session [0d7c4b70-7f21-11eb-a25d-8587fdfc5f81] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"2.1.1","driverName":"ghostdriver","driverVersion":"1.2.0","platform":"linux-unknown-64bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"proxyType":"direct"}}
+[INFO  - 2021-03-07T08:42:30.189Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: 0d7c4b70-7f21-11eb-a25d-8587fdfc5f81
+[ERROR - 2021-03-07T08:42:38.300Z] Session [0d7c4b70-7f21-11eb-a25d-8587fdfc5f81] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
 
   phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:17.950Z] Session [9e3a84f0-7f18-11eb-a989-d1f0a3958578] - page.onError - stack:
-  global code (https://unsplash.com/photos/m4_W2390DSI:97)
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:47.223Z] Session [9e3a84f0-7f18-11eb-a989-d1f0a3958578] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:47.223Z] Session [9e3a84f0-7f18-11eb-a989-d1f0a3958578] - page.onError - stack:
-  global code (https://unsplash.com/photos/m4_W2390DSI:97)
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:48.756Z] Session [9e3a84f0-7f18-11eb-a989-d1f0a3958578] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:48.756Z] Session [9e3a84f0-7f18-11eb-a989-d1f0a3958578] - page.onError - stack:
-  global code (https://unsplash.com/photos/m4_W2390DSI:97)
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:50.310Z] Session [9e3a84f0-7f18-11eb-a989-d1f0a3958578] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:50.310Z] Session [9e3a84f0-7f18-11eb-a989-d1f0a3958578] - page.onError - stack:
-  global code (https://unsplash.com/photos/m4_W2390DSI:97)
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:51.958Z] Session [9e3a84f0-7f18-11eb-a989-d1f0a3958578] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:51.958Z] Session [9e3a84f0-7f18-11eb-a989-d1f0a3958578] - page.onError - stack:
-  global code (https://unsplash.com/photos/m4_W2390DSI:97)
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:42.832Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:42.832Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.onError - stack:
-  global code (https://unsplash.com/photos/m4_W2390DSI:97)
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:44.675Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:44.675Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.onError - stack:
-  global code (https://unsplash.com/photos/m4_W2390DSI:97)
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:48.155Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:48.155Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.onError - stack:
-  global code (https://unsplash.com/photos/m4_W2390DSI:97)
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:50.210Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:50.210Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.onError - stack:
-  global code (https://unsplash.com/photos/m4_W2390DSI:97)
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:51.958Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.onError - msg: TypeError: undefined is not a function (evaluating 'window.performClientRender()')
-
-  phantomjs://platform/console++.js:263 in error
-[ERROR - 2021-03-07T07:42:51.958Z] Session [9ed78840-7f18-11eb-9b58-29bd0d3f9c3c] - page.onError - stack:
-  global code (https://unsplash.com/photos/m4_W2390DSI:97)
+[ERROR - 2021-03-07T08:42:38.300Z] Session [0d7c4b70-7f21-11eb-a25d-8587fdfc5f81] - page.onError - stack:
+  global code (https://unsplash.com/photos/qQ676cbJmns:97)
 
   phantomjs://platform/console++.js:263 in error

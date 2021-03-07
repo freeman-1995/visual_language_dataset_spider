@@ -2,6 +2,7 @@ import os
 import asyncio
 import aiohttp
 from selenium import webdriver
+import copy
 
 class GetResponse():
     def __init__(self):
@@ -34,17 +35,18 @@ class GetResponse():
             print("anysc request failed")
     
     async def phanTomjs(self, urlTask, queReposne):
-        await asyncio.sleep(1)
+        # await asyncio.sleep(1)
         print("request url:{}".format(urlTask))
         self._webdriver.get(urlTask)
-        
         page_source = self._webdriver.page_source
-        queReposne.put((urlTask, page_source))
+        a = copy.deepcopy(str(page_source))
+        queReposne.put((urlTask, a))
         
         # try:
+        #     print("request url:{}".format(urlTask))
         #     self._webdriver.get(urlTask)
-        #     page_source = self._webdriver.page_source()
-        #     queReposne.put((urlTask, page_source))
+        #     page_source = self._webdriver.page_source
+        #     queReposne.put((urlTask, str(page_source)))
         # except:
         #     print("get page source failed")
 
